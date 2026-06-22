@@ -1,4 +1,4 @@
 interface:
   display_name: "Claude Code CLI"
   short_description: "Delegate coding work through Claude Code CLI"
-  default_prompt: "Use $claude-code-cli to delegate a focused code review through Claude Code CLI."
+  default_prompt: "Use $claude-code-cli to run a bounded Claude Code CLI review of the current diff."
