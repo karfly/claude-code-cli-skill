@@ -27,13 +27,19 @@ command -v claude
 claude --version
 ```
 
+If the current directory is not a single Git repository, or is a parent folder containing many nested repositories, stop and choose the specific target repo root before running Claude. For example:
+
+```bash
+cd /absolute/path/to/target-repo
+```
+
 2. Use the default Claude invocation unless the user or environment explicitly requires otherwise:
 
 ```bash
-claude -p --model opus-4.8 --effort high --dangerously-skip-permissions
+claude -p --model opus --effort high --dangerously-skip-permissions
 ```
 
-Treat this as the user's preferred "dangerous bypass" mode. If a request says `--dangerously-bypass`, map that to the local CLI flag `--dangerously-skip-permissions`. `opus-4.8` is the current best available model target; if local help or account access rejects it, use the best available Opus-class model or alias and mention the fallback.
+Treat this as the user's preferred "dangerous bypass" mode. If a request says `--dangerously-bypass`, map that to the local CLI flag `--dangerously-skip-permissions`. Use the `opus` alias as the runnable default for the best available Opus-class model with high effort. If the user explicitly asks for a concrete latest model, try `opus-4.8` only after verifying it is available; if the CLI rejects it, fall back to `opus` and mention the fallback.
 
 3. Choose the smallest delegation mode that can answer the task.
 4. Write a prompt with an explicit goal, scope, permission boundary, validation request, and return format.
@@ -65,7 +71,7 @@ Use when all useful context is already in stdin. Disable tools to avoid accident
 
 ```bash
 printf '%s\n' "$LOGS" | claude -p --tools "" \
-  --model opus-4.8 --effort high --dangerously-skip-permissions \
+  --model opus --effort high --dangerously-skip-permissions \
   "Explain the likely failure cause from this input only. Return 3 bullets max."
 ```
 
@@ -74,7 +80,7 @@ printf '%s\n' "$LOGS" | claude -p --tools "" \
 Use for architecture questions, file discovery, or independent diagnosis. Make "do not edit" explicit.
 
 ```bash
-claude -p --model opus-4.8 --effort high --dangerously-skip-permissions \
+claude -p --model opus --effort high --dangerously-skip-permissions \
   "Find where session expiry is implemented. Do not edit files. Return files, functions, and a concise explanation."
 ```
 
@@ -84,7 +90,7 @@ Use for independent review without granting file access beyond the diff.
 
 ```bash
 git diff origin/main...HEAD | claude -p --output-format json --tools "" \
-  --model opus-4.8 --effort high --dangerously-skip-permissions \
+  --model opus --effort high --dangerously-skip-permissions \
   "Review this diff for correctness bugs only. Return findings with severity, file:line when possible, and rationale."
 ```
 
@@ -93,7 +99,7 @@ git diff origin/main...HEAD | claude -p --output-format json --tools "" \
 Use when another independent implementation plan would reduce risk.
 
 ```bash
-claude -p --model opus-4.8 --effort high --dangerously-skip-permissions \
+claude -p --model opus --effort high --dangerously-skip-permissions \
   "Plan the smallest safe fix for the failing checkout test. Do not edit files. Include assumptions and validation commands."
 ```
 
@@ -102,7 +108,7 @@ claude -p --model opus-4.8 --effort high --dangerously-skip-permissions \
 Use only when edits are allowed. Limit tools and commands to the task.
 
 ```bash
-claude -p --model opus-4.8 --effort high --dangerously-skip-permissions \
+claude -p --model opus --effort high --dangerously-skip-permissions \
   --allowedTools "Read Edit Bash(pnpm test *) Bash(git diff *)" \
   "Fix the regression in packages/api/src/session.ts. Keep the patch minimal. Run pnpm test --filter api. Do not commit."
 ```

@@ -43,7 +43,7 @@ Local help notes that non-interactive mode skips the workspace trust dialog. Use
 - `--fallback-model <model[,model...]>`: use print-mode fallback models when the primary is unavailable.
 - `--effort low|medium|high|xhigh|max`: set effort when supported.
 
-Default to the best available model with high reasoning: currently `--model opus-4.8 --effort high`. If `opus-4.8` is unavailable for the local account or CLI, use the best available Opus-class model or alias and mention the fallback.
+Default to the best available runnable Opus-class model with high reasoning: `--model opus --effort high`. The `opus` alias is preferred because it tracks the best available Opus model for the local CLI/account. If the user explicitly asks for a concrete latest model, try `opus-4.8` only after verifying availability; if the CLI rejects it, fall back to `opus` and mention the fallback.
 
 ## Context and Configuration
 
