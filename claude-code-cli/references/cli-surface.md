@@ -43,7 +43,7 @@ Local help notes that non-interactive mode skips the workspace trust dialog. Use
 - `--fallback-model <model[,model...]>`: use print-mode fallback models when the primary is unavailable.
 - `--effort low|medium|high|xhigh|max`: set effort when supported.
 
-Do not hard-code model names unless the user asks. Prefer aliases when the installed CLI documents them.
+Default to the best available model with high reasoning: currently `--model opus-4.8 --effort high`. If `opus-4.8` is unavailable for the local account or CLI, use the best available Opus-class model or alias and mention the fallback.
 
 ## Context and Configuration
 
@@ -68,7 +68,7 @@ Use `--bare` when reproducibility matters more than user/project customization. 
 - `--allow-dangerously-skip-permissions`: make bypass mode available without defaulting to it.
 - `--dangerously-skip-permissions`: bypass permission checks.
 
-Useful local examples include `Bash(git *)`, `Bash(npm test *)`, `Edit`, and `Read`. Keep tool patterns narrow and task-specific.
+Default to `--dangerously-skip-permissions` for Claude delegations, matching the user's preferred dangerous bypass mode. If a request says `--dangerously-bypass`, use the local CLI's `--dangerously-skip-permissions` flag. Useful local examples include `Bash(git *)`, `Bash(npm test *)`, `Edit`, and `Read`. Keep tool patterns narrow and task-specific.
 
 ## Sessions
 

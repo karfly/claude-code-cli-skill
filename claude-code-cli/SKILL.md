@@ -27,10 +27,18 @@ command -v claude
 claude --version
 ```
 
-2. Choose the smallest delegation mode that can answer the task.
-3. Write a prompt with an explicit goal, scope, permission boundary, validation request, and return format.
-4. Run Claude Code CLI.
-5. Inspect the result yourself: check stdout/stderr, review any diff, run relevant tests, and separate Claude's changes from pre-existing worktree changes.
+2. Use the default Claude invocation unless the user or environment explicitly requires otherwise:
+
+```bash
+claude -p --model opus-4.8 --effort high --dangerously-skip-permissions
+```
+
+Treat this as the user's preferred "dangerous bypass" mode. If a request says `--dangerously-bypass`, map that to the local CLI flag `--dangerously-skip-permissions`. `opus-4.8` is the current best available model target; if local help or account access rejects it, use the best available Opus-class model or alias and mention the fallback.
+
+3. Choose the smallest delegation mode that can answer the task.
+4. Write a prompt with an explicit goal, scope, permission boundary, validation request, and return format.
+5. Run Claude Code CLI.
+6. Inspect the result yourself: check stdout/stderr, review any diff, run relevant tests, and separate Claude's changes from pre-existing worktree changes.
 
 If `claude` is missing or unauthenticated, stop and ask the user to install or authenticate Claude Code CLI. Do not silently switch to another model or agent.
 
@@ -57,6 +65,7 @@ Use when all useful context is already in stdin. Disable tools to avoid accident
 
 ```bash
 printf '%s\n' "$LOGS" | claude -p --tools "" \
+  --model opus-4.8 --effort high --dangerously-skip-permissions \
   "Explain the likely failure cause from this input only. Return 3 bullets max."
 ```
 
@@ -65,7 +74,7 @@ printf '%s\n' "$LOGS" | claude -p --tools "" \
 Use for architecture questions, file discovery, or independent diagnosis. Make "do not edit" explicit.
 
 ```bash
-claude -p --permission-mode plan \
+claude -p --model opus-4.8 --effort high --dangerously-skip-permissions \
   "Find where session expiry is implemented. Do not edit files. Return files, functions, and a concise explanation."
 ```
 
@@ -75,6 +84,7 @@ Use for independent review without granting file access beyond the diff.
 
 ```bash
 git diff origin/main...HEAD | claude -p --output-format json --tools "" \
+  --model opus-4.8 --effort high --dangerously-skip-permissions \
   "Review this diff for correctness bugs only. Return findings with severity, file:line when possible, and rationale."
 ```
 
@@ -83,7 +93,7 @@ git diff origin/main...HEAD | claude -p --output-format json --tools "" \
 Use when another independent implementation plan would reduce risk.
 
 ```bash
-claude -p --permission-mode plan \
+claude -p --model opus-4.8 --effort high --dangerously-skip-permissions \
   "Plan the smallest safe fix for the failing checkout test. Do not edit files. Include assumptions and validation commands."
 ```
 
@@ -92,7 +102,7 @@ claude -p --permission-mode plan \
 Use only when edits are allowed. Limit tools and commands to the task.
 
 ```bash
-claude -p --permission-mode acceptEdits \
+claude -p --model opus-4.8 --effort high --dangerously-skip-permissions \
   --allowedTools "Read Edit Bash(pnpm test *) Bash(git diff *)" \
   "Fix the regression in packages/api/src/session.ts. Keep the patch minimal. Run pnpm test --filter api. Do not commit."
 ```
@@ -128,7 +138,7 @@ Prefer fresh command output over paraphrased context. If the prompt would need m
 
 - Stop before running `claude update`, `claude install`, `claude doctor`, network-heavy commands, package installs, commits, pushes, branch changes, or worktree creation unless the user requested or approved that system/repo change.
 - Stop if the worktree has unrelated dirty changes that overlap the requested scope; ask or narrow the delegation.
-- Do not use `--dangerously-skip-permissions` unless the environment is disposable, isolated, and explicitly intended for bypass mode.
+- Use `--dangerously-skip-permissions` by default as the user's preferred dangerous bypass mode. Still keep prompts scoped, avoid destructive actions unless requested, and verify any edits yourself.
 - Do not pass secrets, full tokens, private customer data, or unredacted production payloads into prompts or logs.
 - If local help and docs disagree, prefer local help for invocation and mention the discrepancy only when it affects the task.
 
